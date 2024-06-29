@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Information</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8f8f8;
+        }
+        .container {
+            padding: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #333;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            background: #333;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .pagination button:hover {
+            background: #555;
+        }
+        .options {
+            display: flex;
+            gap: 10px;
+        }
+        .options button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .options button.view {
+            background: #4CAF50;
+            color: white;
+        }
+        .options button.edit {
+            background: #FFC107;
+            color: white;
+        }
+        .options button.delete {
+            background: #F44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Leave Information</h2>
+        <table id="leaveTable">
+            <thead>
+                <tr>
+                    <th>Employee Name</th>
+                    <th>Employee ID</th>
+                    <th>Leave Type</th>
+                    <th>Start Date</th>
+                    <th>End Date</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Options</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+                <!-- Rows will be added dynamically -->
+            </tbody>
+        </table>
+        <div class="pagination">
+            <button id="prevBtn" onclick="prevPage()" disabled>&laquo; Previous</button>
+            <button id="nextBtn" onclick="nextPage()">Next &raquo;</button>
+        </div>
+    </div>
+    <script>
+        const rowsPerPage = 30;
+        let currentPage = 1;
+        const tableData = [
+            {name: "John Doe", id: "12345", type: "Sick", startDate: "2023-06-01", endDate: "2023-06-05", reason: "Flu", status: "Pending"},
+            {name: "Jane Smith", id: "12346", type: "Casual", startDate: "2023-06-10", endDate: "2023-06-12", reason: "Personal", status: "Approved"},
+            // Add more rows as needed, up to at least 60 for demonstration
+            // ... (repeat similar entries for demonstration)
+        ];
+        
+        // Generate 60 rows for demonstration
+        for (let i = 3; i <= 60; i++) {
+            tableData.push({
+                name: `Employee ${i}`,
+                id: `1234${i}`,
+                type: i % 2 === 0 ? "Sick" : "Casual",
+                startDate: "2023-06-01",
+                endDate: "2023-06-05",
+                reason: i % 2 === 0 ? "Flu" : "Personal",
+                status: i % 2 === 0 ? "Pending" : "Approved"
+            });
+        }
+
+        function displayTableData(page) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = "";
+            const start = (page - 1) * rowsPerPage;
+            const end = page * rowsPerPage;
+            const paginatedItems = tableData.slice(start, end);
+
+            paginatedItems.forEach(item => {
+                const row = `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.id}</td>
+                    <td>${item.type}</td>
+                    <td>${item.startDate}</td>
+                    <td>${item.endDate}</td>
+                    <td>${item.reason}</td>
+                    <td>${item.status}</td>
+                    <td class="options">
+                        <button class="view">View</button>
+                        <button class="edit">Edit</button>
+                        <button class="delete">Delete</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayTableData(currentPage);
+                document.getElementById('nextBtn').disabled = false;
+            }
+            if (currentPage === 1) {
+                document.getElementById('prevBtn').disabled = true;
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < Math.ceil(tableData.length / rowsPerPage)) {
+                currentPage++;
+                displayTableData(currentPage);
+                document.getElementById('prevBtn').disabled = false;
+            }
+            if (currentPage === Math.ceil(tableData.length / rowsPerPage)) {
+                document.getElementById('nextBtn').disabled = true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            displayTableData(currentPage);
+            if (tableData.length <= rowsPerPage) {
+                document.getElementById('nextBtn').disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>

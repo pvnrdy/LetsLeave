@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leave Management System</title>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8f8f8;
+        }
+        .container {
+            display: flex;
+            height: 100%;
+        }
+        .sidebar {
+            background: #333;
+            width: 200px;
+            padding: 20px;
+            color: white;
+            position: relative;
+        }
+        .sidebar ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sidebar ul li {
+            padding: 10px;
+            cursor: pointer;
+            position: relative;
+        }
+        .sidebar ul li:hover {
+            background: #555;
+        }
+        .sidebar ul li:hover .sub-menu {
+            display: block;
+        }
+        .sub-menu {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 200px;
+            background: #555;
+            width: 200px;
+            padding: 20px;
+        }
+        .sub-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+        .sub-menu ul li {
+            padding: 10px;
+            cursor: pointer;
+        }
+        .sub-menu ul li:hover {
+            background: #777;
+        }
+        .content {
+            flex-grow: 1;
+            padding: 20px;
+        }
+        .topbar {
+            background: #007bff;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar .profile, .topbar .notifications {
+            color: white;
+            cursor: pointer;
+        }
+        .form-panel, .table-panel {
+            background: white;
+            padding: 40px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .form-panel h2, .table-panel h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"], input[type="date"], select, textarea {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background: #333;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #555;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #333;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background: #f2f2f2;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .pagination button {
+            background: #333;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 0 5px;
+        }
+        .pagination button:hover {
+            background: #555;
+        }
+        .options {
+            display: flex;
+            gap: 10px;
+        }
+        .options button {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .options button.view {
+            background: #4CAF50;
+            color: white;
+        }
+        .options button.edit {
+            background: #FFC107;
+            color: white;
+        }
+        .options button.delete {
+            background: #F44336;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div>Leave Management System</div>
+        <div>
+            <span class="notifications">Notifications</span>
+            <span class="profile">Profile</span>
+        </div>
+    </div>
+    <div class="container">
+        <div class="sidebar">
+            <ul>
+                <li>
+                    Modules
+                    <div class="sub-menu">
+                        <ul>
+                            <li>Apply Leave</li>
+                            <li>Leave Status</li>
+                            <li>Reports</li>
+                        </ul>
+                    </div>
+                </li>
+                <li>
+                    Administration
+                    <div class="sub-menu">
+                        <ul>
+                            <li>Manage Users</li>
+                            <li>Manage Leaves</li>
+                            <li>Settings</li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <div class="content">
+            <div class="form-panel">
+                <h2>Apply for Leave</h2>
+                <form action="/submit-leave" method="POST">
+                    <input type="text" name="employeeName" placeholder="Employee Name" required>
+                    <input type="text" name="employeeId" placeholder="Employee ID" required>
+                    <input type="date" name="startDate" placeholder="Start Date" required>
+                    <input type="date" name="endDate" placeholder="End Date" required>
+                    <select name="leaveType" required>
+                        <option value="" disabled selected>Leave Type</option>
+                        <option value="Sick">Sick</option>
+                        <option value="Casual">Casual</option>
+                        <option value="Comp Off">Comp Off</option>
+                        <option value="Annual">Annual</option>
+                    </select>
+                    <textarea name="reason" placeholder="Reason" rows="4" required></textarea>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+            <div class="table-panel">
+                <h2>Leave Information</h2>
+                <table id="leaveTable">
+                    <thead>
+                        <tr>
+                            <th>Employee Name</th>
+                            <th>Employee ID</th>
+                            <th>Leave Type</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Reason</th>
+                            <th>Status</th>
+                            <th>Options</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Rows will be added dynamically -->
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <button id="prevBtn" onclick="prevPage()" disabled>&laquo; Previous</button>
+                    <button id="nextBtn" onclick="nextPage()">Next &raquo;</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        const rowsPerPage = 30;
+        let currentPage = 1;
+        const tableData = [
+            {name: "John Doe", id: "12345", type: "Sick", startDate: "2023-06-01", endDate: "2023-06-05", reason: "Flu", status: "Pending"},
+            {name: "Jane Smith", id: "12346", type: "Casual", startDate: "2023-06-10", endDate: "2023-06-12", reason: "Personal", status: "Approved"},
+            // Add more rows as needed, up to at least 60 for demonstration
+            // ... (repeat similar entries for demonstration)
+        ];
+        
+        // Generate 60 rows for demonstration
+        for (let i = 3; i <= 60; i++) {
+            tableData.push({
+                name: `Employee ${i}`,
+                id: `1234${i}`,
+                type: i % 2 === 0 ? "Sick" : "Casual",
+                startDate: "2023-06-01",
+                endDate: "2023-06-05",
+                reason: i % 2 === 0 ? "Flu" : "Personal",
+                status: i % 2 === 0 ? "Pending" : "Approved"
+            });
+        }
+
+        function displayTableData(page) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = "";
+            const start = (page - 1) * rowsPerPage;
+            const end = page * rowsPerPage;
+            const paginatedItems = tableData.slice(start, end);
+
+            paginatedItems.forEach(item => {
+                const row = `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.id}</td>
+                    <td>${item.type}</td>
+                    <td>${item.startDate}</td>
+                    <td>${item.endDate}</td>
+                    <td>${item.reason}</td>
+                    <td>${item.status}</td>
+                    <td class="options">
+                        <button class="view">View</button>
+                        <button class="edit">Edit</button>
+                        <button class="delete">Delete</button>
+                    </td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                displayTableData(currentPage);
+                document.getElementById('nextBtn').disabled = false;
+            }
+            if (currentPage === 1) {
+                document.getElementById('prevBtn').disabled = true;
+            }
+        }
+
+        function nextPage() {
+            if (currentPage < Math.ceil(tableData.length / rowsPerPage)) {
+                currentPage++;
+                displayTableData(currentPage);
+                document.getElementById('prevBtn').disabled = false;
+            }
+            if (currentPage === Math.ceil(tableData.length / rowsPerPage)) {
+                document.getElementById('nextBtn').disabled = true;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            displayTableData(currentPage);
+            if (tableData.length <= rowsPerPage) {
+                document.getElementById('nextBtn').disabled = true;
+            }
+        });
+    </script>
+</body>
+</html>
